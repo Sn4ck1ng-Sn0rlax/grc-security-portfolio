@@ -14,7 +14,7 @@ I'm John Wambugu Ndung'u, an IT and security professional with hands-on experien
 
 | Folder / File | Description |
 |---|---|
-| `seta-program-framework.md` | A complete, reusable Security Education, Training & Awareness program framework covering onboarding, phishing simulation, role-based training, and metrics. |
+| `seta-program/seta-program-framework.md` | A complete, reusable Security Education, Training & Awareness program framework covering onboarding, phishing simulation, role-based training, and metrics. |
 | `grc-toolkit/risk-register-template.md` | A structured risk register template with worked examples, mapped to likelihood/impact scoring. |
 | `grc-toolkit/iso27001-compliance-checklist.md` | A control-by-control compliance checklist aligned to ISO/IEC 27001 Annex A, adaptable to organizations of any size. |
 | `grc-toolkit/pii_data_scanner.py` | A Python script that scans a directory for files likely to contain personally identifiable information (PII), supporting data protection compliance and due diligence reviews. |
