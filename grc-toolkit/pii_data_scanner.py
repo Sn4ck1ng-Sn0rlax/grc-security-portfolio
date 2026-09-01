@@ -2,8 +2,8 @@
 PII Data Scanner
 -----------------
 A lightweight compliance and data protection due diligence tool that scans a
-directory of text-based files (.txt, .csv, .log, .md) for patterns commonly
-associated with Personally Identifiable Information (PII).
+directory of text-based files (.txt, .csv, .log, .md, .json) for patterns
+commonly associated with Personally Identifiable Information (PII).
 
 Use case: supporting data protection compliance reviews and due diligence
 checks, e.g. before onboarding a new vendor's data export, or auditing an
@@ -12,6 +12,10 @@ internal shared drive for accidental exposure of sensitive data.
 This is a detection aid, not a substitute for a full Data Protection Impact
 Assessment (DPIA) or legal review. Always validate findings manually before
 taking action.
+
+Usage:
+    python3 pii_data_scanner.py /path/to/directory
+    python3 pii_data_scanner.py /path/to/directory -o custom_report.csv
 
 Author: John Wambugu Ndung'u
 """
@@ -22,38 +26,78 @@ import csv
 import argparse
 from datetime import datetime
 
-# --- Pattern definitions -----------------------------------------------------
-# These are intentionally broad, general-purpose patterns. Real deployments
-# should tune these to the specific ID formats and data types relevant to
-# the organization's operating jurisdictions.
 
-PATTERNS = {
-    "Email Address": re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"),
-    "Phone Number (generic)": re.compile(r"\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}\b"),
-    "Kenyan National ID (8 digits)": re.compile(r"\b\d{8}\b"),
-    "Credit Card Number (13-16 digits, optionally spaced/dashed)": re.compile(
-        r"\b(?:\d[ -]*?){13,16}\b"
-    ),
-    "IBAN-style Bank Account": re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{10,30}\b"),
-}
+def _luhn_valid(number_str):
+    """
+    Validate a numeric string against the Luhn checksum algorithm, the
+    same checksum used by Visa, Mastercard, and other major card networks
+    to validate card numbers. Returns True only if the number passes the
+    checksum, which sharply reduces false positives compared to matching
+    on digit count alone.
+    """
+    digits = [int(d) for d in re.sub(r"\D", "", number_str)]
+    if len(digits) < 13:
+        return False
+    digits.reverse()
+    total = 0
+    for i, d in enumerate(digits):
+        if i % 2 == 1:
+            d *= 2
+            if d > 9:
+                d -= 9
+        total += d
+    return total % 10 == 0
+
+
+# Patterns are ordered from most specific/reliable to least specific. When
+# two patterns could both match the same span of text, the higher-priority
+# (earlier-listed) pattern wins and the lower-priority one is suppressed for
+# that span. This avoids the same digit sequence being reported twice under
+# different categories, e.g. an 8-digit ID also matching a loose phone
+# pattern. Each pattern can optionally carry a validator function that must
+# return True before a match is accepted.
+PATTERNS = [
+    ("Email Address", re.compile(r"[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"), None),
+    ("IBAN-style Bank Account", re.compile(r"\b[A-Z]{2}\d{2}[A-Z0-9]{10,30}\b"), None),
+    ("Credit Card Number", re.compile(r"\b(?:\d[ -]?){13,16}\b"), _luhn_valid),
+    ("Kenyan National ID (8 digits)", re.compile(r"\b\d{8}\b"), None),
+    ("Phone Number (generic)", re.compile(r"\b(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}\b"), None),
+]
 
 SCANNABLE_EXTENSIONS = {".txt", ".csv", ".log", ".md", ".json"}
 
 
 def scan_file(filepath):
-    """Scan a single file for PII patterns. Returns a list of findings."""
+    """
+    Scan a single file for PII patterns. Returns a list of findings.
+    Overlapping matches on the same line are resolved in favor of the
+    higher-priority pattern to avoid duplicate or conflicting reports,
+    and any pattern with a validator (e.g. Luhn check) must pass it
+    before being counted.
+    """
     findings = []
     try:
         with open(filepath, "r", encoding="utf-8", errors="ignore") as f:
             for line_number, line in enumerate(f, start=1):
-                for label, pattern in PATTERNS.items():
-                    matches = pattern.findall(line)
-                    for match in matches:
+                claimed_spans = []  # (start, end) spans already matched on this line
+                for label, pattern, validator in PATTERNS:
+                    for match in pattern.finditer(line):
+                        start, end = match.span()
+                        overlaps = any(
+                            start < c_end and end > c_start
+                            for c_start, c_end in claimed_spans
+                        )
+                        if overlaps:
+                            continue
+                        value = match.group()
+                        if validator and not validator(value):
+                            continue
+                        claimed_spans.append((start, end))
                         findings.append({
                             "file": filepath,
                             "line": line_number,
                             "type": label,
-                            "match_preview": _mask(match),
+                            "match_preview": _mask(value),
                         })
     except (UnicodeDecodeError, PermissionError, IsADirectoryError):
         pass  # Skip unreadable or binary files
