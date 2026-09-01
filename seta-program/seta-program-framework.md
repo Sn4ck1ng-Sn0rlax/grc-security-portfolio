@@ -7,7 +7,7 @@ A reusable framework for designing and running an organization-wide SETA program
 - Reduce human-driven security incidents (phishing, weak credentials, unsafe data handling)
 - Build a baseline of security literacy across all staff, regardless of technical role
 - Create a culture where reporting a suspected incident is fast, easy, and blame-free
-- Support compliance obligations tied to data protection and organizational policy
+- Support compliance obligations tied to data protection and organizational policy — many data protection frameworks, including Kenya's Data Protection Act (2019) and the EU's GDPR, explicitly require organizations to ensure staff handling personal data are aware of their obligations, making SETA a compliance requirement, not just a best practice
 
 ## 2. Audience Segmentation
 
