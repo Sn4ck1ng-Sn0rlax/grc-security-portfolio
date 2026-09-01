@@ -1,6 +1,15 @@
 # ISO/IEC 27001 Annex A Compliance Checklist
 
-A practical, control-by-control checklist for assessing an organization's readiness against ISO/IEC 27001 Annex A control themes. Designed for internal self-assessment ahead of a formal audit, or as a standalone GRC maturity review.
+A practical, control-by-control checklist for assessing an organization's readiness against ISO/IEC 27001:2022 Annex A control themes. Designed for internal self-assessment ahead of a formal audit, or as a standalone GRC maturity review.
+
+| Document Control | |
+|---|---|
+| Version | 1.1 |
+| Aligned To | ISO/IEC 27001:2022 Annex A (post-2022 restructure: A.5 Organizational, A.6 People, A.7 Physical, A.8 Technological) |
+| Owner | IT / Security Lead |
+| Last Reviewed | [Insert date] |
+
+**Scope note:** Annex A contains 93 controls in total. This checklist presents a curated, high-impact subset of controls most relevant to a small-to-mid-sized organization's first maturity assessment, not the complete control set. For formal certification, the full Annex A must be assessed by an accredited auditor.
 
 ## How to Use
 
