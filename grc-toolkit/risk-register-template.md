@@ -1,6 +1,13 @@
 # Risk Register Template
 
-A structured, reusable risk register for tracking, scoring, and managing organizational risks. Includes a scoring methodology and three worked examples.
+A structured, reusable risk register for tracking, scoring, and managing organizational risks. Includes a scoring methodology and worked examples across multiple risk categories.
+
+| Document Control | |
+|---|---|
+| Version | 1.1 |
+| Owner | IT / Security Lead |
+| Last Reviewed | [Insert date] |
+| Next Review Due | [Insert date, typically 6–12 months out] |
 
 ## Scoring Methodology
 
@@ -24,6 +31,7 @@ A structured, reusable risk register for tracking, scoring, and managing organiz
 | R-001 | Staff use personal devices with no endpoint protection to access company systems | Technical / BYOD | 4 | 4 | 16 | Critical | IT Lead | Deploy EDR solution across all personal devices accessing company systems; enforce via updated BYOD policy | Open | Quarterly |
 | R-002 | No formal incident response plan exists for a data breach involving client information | Governance / Compliance | 3 | 5 | 15 | High | Security Lead | Draft and test an incident response plan; run a tabletop exercise with key stakeholders | Open | Quarterly |
 | R-003 | Vendor with access to company payment systems has not been security-vetted | Third-Party / Vendor | 2 | 4 | 8 | Medium | Operations Manager | Conduct vendor security due diligence review; add security clause to contract renewal | In Progress | Bi-annual |
+| R-004 | A partner organization suffers a public data breach, and shared systems or joint branding expose the company to reputational association | Reputational / Strategic | 2 | 3 | 6 | Medium | Executive Leadership | Review data-sharing agreements with key partners; establish a communications response plan for third-party incidents affecting shared services | Open | Annual |
 
 ## How to Use This Template
 
